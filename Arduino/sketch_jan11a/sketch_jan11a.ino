@@ -1,7 +1,9 @@
+/*  https://github.com/Makuna/NeoPixelBus */
 #include <NeoPixelBus.h>
 #include <RgbColor.h>
 
 /*
+
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <WiFiClient.h>
