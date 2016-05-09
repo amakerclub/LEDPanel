@@ -201,33 +201,54 @@ void handleHexaStringRequest(String req, int waitms) {
   int off = 0;
   int pixelNumber= 0;
   for (int curCol = 0; curCol < 8; ++curCol) {
-    int colValue = hexaToInt(req.charAt(2*curCol)) << 8 + hexaToInt(req.charAt(2*curCol + 1));
+  
+  char colValue = (hexaToInt(req.charAt(2*curCol)) << 4 )+ hexaToInt(req.charAt(2*curCol + 1));
+  Serial.println("curCol & value");
+  Serial.println(curCol);
+  Serial.println(colValue,BIN );
+  Serial.println("req.charAt(2*curCol)");
+  Serial.println(req.charAt(2*curCol),BIN );
+  //Serial.println(req.charAt(2*curCol + 1),BIN );
+
+  Serial.println("hexaToInt(...)");
+  Serial.println(hexaToInt(req.charAt(2*curCol)),BIN );
+  //Serial.println(hexaToInt(req.charAt(2*curCol + 1)),BIN );
+  Serial.println("hexaToInt...<<4");
+  Serial.println(hexaToInt(req.charAt(2*curCol))<<4,BIN );
+  
     int checker;
     if (curCol % 2 == 0) {
       checker = 1;
     }
     else {
-      checker = 128;
+      checker = 256;
     }
-    
+
     for (int curBit = 0; curBit < 8; curBit++) {
-      if ((curCol & checker) == checker) {
-        strip.SetPixelColor(pixelNumber++, white);      
+      Serial.println(pixelNumber);
+      Serial.println("Checker : ");
+      Serial.println(colValue & checker, BIN);
+      Serial.println(checker, BIN);
+      if ((colValue & checker) == checker) {
+        strip.SetPixelColor(pixelNumber++, white); 
+        Serial.println("is set to WHITE " );
       }
       else {
         strip.SetPixelColor(pixelNumber++, black);            
+        Serial.println("is set to BLACK");
+  
       }
       if (curCol % 2 == 0) {
-        checker << 1;
+        checker = checker << 1;
       }
       else {
-        checker >> 1;
+        checker = checker >> 1;
       }      
     }
-  }
   
   strip.Show();
   delay(waitms);       
+  }
 }
 
 
@@ -236,12 +257,14 @@ void handleHexaStringRequest(String req, int waitms) {
 void printScroll(String input, int waitms) {
   // Need to add a space at the beginning/ end of the string
   int curOffset_message = 0;
-  while (true) {
+  
+  for (int maxLoop=0; maxLoop<5*input.length(); ++maxLoop) {
     
     String Chars_2 =   getCharHexa(input.charAt(curOffset_message)) +  getCharHexa(input.charAt((curOffset_message + 1) % input.length()));
     
     for (int offsetLetter = 0; offsetLetter < 8; ++offsetLetter) {
       handleHexaStringRequest(Chars_2 , waitms);
+      
       
     }
     curOffset_message = curOffset_message + 1;
@@ -382,11 +405,11 @@ void handleMessageScrollRequest(String req ){
     
     size_t equals = req.indexOf("?");
     if (equals != -1) {
-      String message=req.substring(equals+1);
+      String message=req.substring(equals+1, req.length()-9);
       printDebug("message : " + message);
+      printScroll(message, 500);
       
       
-      strip.Show();
     }
 }
 
