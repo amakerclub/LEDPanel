@@ -111,7 +111,7 @@
 #define LEDPIN 2
 const char WiFiAPPSK[] = "aMakerESP8266";
 
-NeoPixelBus strip = NeoPixelBus(pixelCount, PANELPIN);
+NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(pixelCount, PANELPIN);
 uint16_t effectState = 0;
 byte pixelMapping [8][8]; 
 
