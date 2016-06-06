@@ -385,7 +385,7 @@ void handleMessageScrollRequest(String req ){
     if (equals != -1) {
       String message=req.substring(equals+1, req.length()-9);
       printDebug("message : " + message);
-      printScroll(message, 100, 0);
+      printScroll(message, 100, 1);
       
       
     }
