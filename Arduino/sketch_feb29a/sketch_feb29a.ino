@@ -1,4 +1,3 @@
-#include <NeoPixelBus.h>
 #include <ESP8266WiFi.h>
 
 #define pixelCount 64
@@ -8,7 +7,6 @@ const char WiFiAPPSK[] = "aMakerESP8266";
 WiFiServer server(80);
 
 bool debug = true;
-// NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(pixelCount, 4);
 
 void setupWiFi()
 {
@@ -42,7 +40,6 @@ void setup()
 {
   setupWiFi();
   server.begin();
-  // strip.begin();
   Serial.begin(9600);
 }
 
@@ -64,8 +61,9 @@ void loop()
     printDebug("Confirm request received");
     size_t equals = req.indexOf("?");
     if (equals != -1) {
-      String colors=req.substring(equals+1);
+      String colors=req.substring(equals+8);
       printDebug("colors : " + colors);
+      
       int currentComma = 0;
       int nextComma = colors.indexOf(',',currentComma);
       while (nextComma != -1) {
