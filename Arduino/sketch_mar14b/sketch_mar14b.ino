@@ -4,10 +4,9 @@
 
 
 /*Bitmap of ANSI chars - letters+numbers+common signs:  starts at char Ox21, ends at 0x7E */
- String  ansiCharsByCols [97] = {
-  "0000000000000000", //20
+ String  ansiCharsByCols [96] = {
+  "0000000000000000", //32
   "000000fa00000000", 
-  "0000000000000000",
   "0000c000c0000000",
   "000028fe28fe2800",
   "00002454fe544800",
@@ -186,8 +185,8 @@ void started(){
  }
 
 String getCharHexa(char value) {
-  if (value >= 20 && value <= 0x7e) {
-    return ansiCharsByCols[value - 31];
+  if (value >=32 && value <= 125) {
+    return ansiCharsByCols[value - 32];
   }
   else {
     return "ffffffffffffffff";
@@ -374,23 +373,57 @@ void handleDoRequest(String req ){
       strip.Show();
     }
 }
+
+String decodeUrl(String req) {
+  return req;
+}
+
 /* REST service to set entire image colors=RRGGBB,RRGGBB,RRGGBB,RRGGBB,....,RRGGBB (64 colors passed */
 void handleMessageScrollRequest(String req ){
     blink(1);
 
     printDebug("Confirm handleMessageScrollRequest  received");
     printDebug(req);
-    
+    req.replace("%20", " ");
+    req.replace("%21", "!");
+    req.replace("%22", "\"");
+    req.replace("%23", "#");
+    req.replace("%24", "$");
+    req.replace("%25", "%");
+    req.replace("%26", "&");
+    req.replace("%27", "'");
+    req.replace("%28", "(");
+    req.replace("%29", ")");
+    req.replace("%2A", "*");
+    req.replace("%2B", "+");
+    req.replace("%2C", ",");
+    req.replace("%2D", "-");
+    req.replace("%2E", ".");
+    req.replace("%2F", "/");
+    req.replace("%3A", ":");
+    req.replace("%3B", ";");
+    req.replace("%3C", "<");
+    req.replace("%3D", "?");
+    req.replace("%3F", ">");
+    req.replace("%3F", "?");
+    req.replace("%40", "@");
+    req.replace("%5B", "[");
+    req.replace("%5C", "\\");
+    req.replace("%5D", "]");
+    req.replace("%5E", "^");
+    req.replace("%5F", "_");
+    req.replace("%60", "`");
+    req.replace("%7B", "{");
+    req.replace("%7C", "|");
+    req.replace("%7D", "}");
+    req.replace("%7E", "~");
     size_t equals = req.indexOf("?");
     if (equals != -1) {
       String message=req.substring(equals+1, req.length()-9);
       printDebug("message : " + message);
       printScroll(message, 100, 1);
-      
-      
     }
 }
-
 
 void handleDefault(WiFiClient client){
 blink(1);
