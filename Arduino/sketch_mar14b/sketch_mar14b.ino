@@ -117,7 +117,7 @@ byte pixelMapping [8][8];
 
 WiFiServer server(80);
 
-bool debug = true;
+bool debug = false;
 
 void blink(byte n){
   for (byte i=0; i<n; i++) {
@@ -173,7 +173,6 @@ void setupWiFi()
     AP_NameChar[i] = AP_NameString.charAt(i);
 
   WiFi.softAP(AP_NameChar, WiFiAPPSK);
-
 blink(4);
 }
 
@@ -188,7 +187,7 @@ void started(){
 
 String getCharHexa(char value) {
   if (value >= 20 && value <= 0x7e) {
-    return ansiCharsByCols[value - 20];
+    return ansiCharsByCols[value - 31];
   }
   else {
     return "ffffffffffffffff";
@@ -203,73 +202,51 @@ void handleHexaStringRequest(String req, int waitms) {
   int pixelNumber= 0;
   for (int curCol = 0; curCol < 8; ++curCol) {
   
-  char colValue = (hexaToInt(req.charAt(2*curCol)) << 4 )+ hexaToInt(req.charAt(2*curCol + 1));
-  Serial.println("curCol & value");
-  Serial.println(curCol);
-  Serial.println(colValue,BIN );
-  Serial.println("req.charAt(2*curCol)");
-  Serial.println(req.charAt(2*curCol),BIN );
-  //Serial.println(req.charAt(2*curCol + 1),BIN );
-
-  Serial.println("hexaToInt(...)");
-  Serial.println(hexaToInt(req.charAt(2*curCol)),BIN );
-  //Serial.println(hexaToInt(req.charAt(2*curCol + 1)),BIN );
-  Serial.println("hexaToInt...<<4");
-  Serial.println(hexaToInt(req.charAt(2*curCol))<<4,BIN );
-  
+    char colValue = (hexaToInt(req.charAt(2*curCol)) << 4 )+ hexaToInt(req.charAt(2*curCol + 1));
     int checker;
-    if (curCol % 2 == 0) {
+    if (curCol % 2 == 1) {
       checker = 1;
     }
     else {
-      checker = 256;
+      checker = 128;
     }
 
     for (int curBit = 0; curBit < 8; curBit++) {
-      Serial.println(pixelNumber);
-      Serial.println("Checker : ");
-      Serial.println(colValue & checker, BIN);
-      Serial.println(checker, BIN);
       if ((colValue & checker) == checker) {
         strip.SetPixelColor(pixelNumber++, white); 
-        Serial.println("is set to WHITE " );
       }
       else {
         strip.SetPixelColor(pixelNumber++, black);            
-        Serial.println("is set to BLACK");
-  
       }
-      if (curCol % 2 == 0) {
+      if (curCol % 2 == 1) {
         checker = checker << 1;
       }
       else {
         checker = checker >> 1;
       }      
     }
-  
+  }
   strip.Show();
   delay(waitms);       
-  }
 }
 
 
 
 
-void printScroll(String input, int waitms) {
+void printScroll(String input, int waitms, int nbLoops) {
   // Need to add a space at the beginning/ end of the string
   int curOffset_message = 0;
   
-  for (int maxLoop=0; maxLoop<5*input.length(); ++maxLoop) {
+  for (int maxLoop=0; maxLoop<nbLoops*input.length(); ++maxLoop) {
     
     String Chars_2 =   getCharHexa(input.charAt(curOffset_message)) +  getCharHexa(input.charAt((curOffset_message + 1) % input.length()));
     
     for (int offsetLetter = 0; offsetLetter < 8; ++offsetLetter) {
       handleHexaStringRequest(Chars_2 , waitms);
-      
-      
+      Chars_2=Chars_2.substring(2);
     }
     curOffset_message = curOffset_message + 1;
-    if (curOffset_message > input.length()) {
+    if (curOffset_message > input.length() - 1) {
       curOffset_message = 0;
     }
   }
@@ -408,7 +385,7 @@ void handleMessageScrollRequest(String req ){
     if (equals != -1) {
       String message=req.substring(equals+1, req.length()-9);
       printDebug("message : " + message);
-      printScroll(message, 500);
+      printScroll(message, 100, 1);
       
       
     }
@@ -447,7 +424,7 @@ void loop()
   if (!client) {
     return;
   }
-
+  client.setTimeout(120000);
   // Read the first line of the request
   String req = client.readStringUntil('\r');
   client.flush();
@@ -460,8 +437,6 @@ void loop()
 
   // Send the response to the client - always ok :-/
   
-  client.print(s);
-  
   if (req.indexOf("/do?") != -1) {
     handleDoRequest(req);
   }
@@ -473,9 +448,10 @@ void loop()
   }
   else { handleDefault(client);}
   
+  client.print(s);
+  
   client.flush();
 
-  
   delay(1);
   printDebug("Client disconnected");
 
