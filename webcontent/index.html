@@ -1,0 +1,209 @@
+<html>
+<head>
+<title>aMaker club - CE aMaDEUS</title>
+<meta charset="utf-8" />
+</head>
+<script>
+	function sendColor(t) {
+		httpGetAsync(this.location + "/set?" + t.id + "=" + t.value);
+	}
+	function callback() {
+	}
+	function httpGetAsync(theUrl, callback) {
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.onreadystatechange = function() {
+			if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+				callback(xmlHttp.responseText);
+		}
+		xmlHttp.open("GET", theUrl, true);
+		xmlHttp.send();
+	}
+	function sendAll() {
+		s = "";
+		for (var i = 0; i < 8; i++)
+			for (var j = 0; j < 8; j++) {
+				col = document.getElementById("" + i + "." + j).value
+				if (col == null)
+					col = "000000"
+				else
+					col = col.substr(col.length - 6)
+				s = s + col + ",";
+			}
+		alert(this.location + "/do?colors=" + s);
+		httpGetAsync(this.location + "/do?colors=" + s)
+	}
+</script>
+
+<style>
+body {
+	background-color: black;
+	color: white;
+}
+
+table, tr, td {
+	margin: 0px;
+	padding: 0px
+}
+
+input[type=color] {
+	background-color: black;
+	
+	border: solid 0px black;
+	height: 20px;
+	width: 20px;
+	padding: 0px;
+	margin: 0px;
+}
+</style>
+<body>
+&#x2198; &#x2192; &#x2193;
+	<table>
+	
+	
+		<tr>
+			<td><input id="0.0" type="color"></td><td>
+			<input id="0.1" type="color">
+			</td><td>
+			<input id="0.2" type="color">
+			</td><td>
+			<input id="0.3" type="color">
+			</td><td>
+			<input id="0.4" type="color">
+			</td><td>
+			<input id="0.5" type="color">
+			</td><td>
+			<input id="0.6" type="color">
+			</td><td>
+			<input id="0.7" type="color">
+			</td>
+		</tr>
+		<tr><td>
+			<input id="1.0" type="color">
+			</td><td>
+			<input id="1.1" type="color">
+			</td><td>
+			<input id="1.2" type="color">
+			</td><td>
+			<input id="1.3" type="color">
+			</td><td>
+			<input id="1.4" type="color">
+			</td><td>
+			<input id="1.5" type="color">
+			</td><td>
+			<input id="1.6" type="color">
+			</td><td>
+			<input id="1.7" type="color">
+			</td>
+		</tr>
+		<tr><td>
+			<input id="2.0" type="color">
+			</td><td>
+			<input id="2.1" type="color">
+			</td><td>
+			<input id="2.2" type="color">
+			</td><td>
+			<input id="2.3" type="color">
+			</td><td>
+			<input id="2.4" type="color">
+			</td><td>
+			<input id="2.5" type="color">
+			</td><td>
+			<input id="2.6" type="color">
+			</td><td>
+			<input id="2.7" type="color">
+			</td>
+		</tr>
+		<tr><td>
+			<input id="3.0" type="color">
+			</td><td>
+			<input id="3.1" type="color">
+			</td><td>
+			<input id="3.2" type="color">
+			</td><td>
+			<input id="3.3" type="color">
+			</td><td>
+			<input id="3.4" type="color">
+			</td><td>
+			<input id="3.5" type="color">
+			</td><td>
+			<input id="3.6" type="color">
+			</td><td>
+			<input id="3.7" type="color">
+			</td>
+		</tr>
+		<tr><td>
+			<input id="4.0" type="color">
+			</td><td>
+			<input id="4.1" type="color">
+			</td><td>
+			<input id="4.2" type="color">
+			</td><td>
+			<input id="4.3" type="color">
+			</td><td>
+			<input id="4.4" type="color">
+			</td><td>
+			<input id="4.5" type="color">
+			</td><td>
+			<input id="4.6" type="color">
+			</td><td>
+			<input id="4.7" type="color">
+			</td>
+		</tr>
+		<tr><td>
+			<input id="5.0" type="color">
+			</td><td>
+			<input id="5.1" type="color">
+			</td><td>
+			<input id="5.2" type="color">
+			</td><td>
+			<input id="5.3" type="color">
+			</td><td>
+			<input id="5.4" type="color">
+			</td><td>
+			<input id="5.5" type="color">
+			</td><td>
+			<input id="5.6" type="color">
+			</td><td>
+			<input id="5.7" type="color">
+			</td>
+		</tr>
+		<tr><td>
+			<input id="6.0" type="color">
+			</td><td>
+			<input id="6.1" type="color">
+			</td><td>
+			<input id="6.2" type="color">
+			</td><td>
+			<input id="6.3" type="color">
+			</td><td>
+			<input id="6.4" type="color">
+			</td><td>
+			<input id="6.5" type="color">
+			</td><td>
+			<input id="6.6" type="color">
+			</td><td>
+			<input id="6.7" type="color">
+			</td>
+		</tr>
+		<tr><td>
+			<input id="7.0" type="color">
+			</td><td>
+			<input id="7.1" type="color">
+			</td><td>
+			<input id="7.2" type="color">
+			</td><td>
+			<input id="7.3" type="color">
+			</td><td>
+			<input id="7.4" type="color">
+			</td><td>
+			<input id="7.5" type="color">
+			</td><td>
+			<input id="7.6" type="color">
+			</td><td>
+			<input id="7.7" type="color">
+			</td>
+		</tr>
+	</table>
+	<input type="button" value="SEND" onclick="javascript:sendAll();" />
+</body>
+</html>
