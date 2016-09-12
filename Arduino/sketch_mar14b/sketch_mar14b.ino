@@ -432,7 +432,8 @@ blink(1);
   
   client.println("<html><head><title>aMaker club - CE aMaDEUS</title></head>\r\n<script>\r\nfunction sendColor(t){ httpGetAsync( this.location + \"/set?\"+t.id+\"=\"+t.value);}\r\nfunction callback(){ } ");
     client.println("function httpGetAsync(theUrl, callback) {    var xmlHttp = new XMLHttpRequest();\r\n   xmlHttp.onreadystatechange = function() { if (xmlHttp.readyState == 4 && xmlHttp.status == 200) \r\ncallback(xmlHttp.responseText); }  \r\nxmlHttp.open(\"GET\", theUrl, true);\r\nxmlHttp.send(); }");
-   client.println("function sendAll() { s= \"\"; for (int i=0; i<8; i++) { for (int j=0; j<8; j++) { s=s+document.getElementById(\"\"+i+\".\"+\"j\")+\",\";}} httpGetAsync( this.location + \"/do?colors=\"+s) }");
+   client.println("function sendMsg() { httpGetAsync( this.location + \"/msg?  \" + document.getElementById(\"text\").value);}");
+   client.println("function sendAll() { s= \"\"; for (var i=0; i<8; i++) { for (var j=0; j<8; j++) { s=s+document.getElementById(\"\"+i+\".\"+\"j\")+\",\";}} httpGetAsync( this.location + \"/do?colors=\"+s) }");
     client.println("</script>\r\n<style>\r\nbody{ background-color: black; }\r\ntable,tr,td { margin: 0px; padding:0px}\r\ninput[type=color] { background-color: black;border: solid 0px black; height: 20px;width: 20px; padding:0px;margin: 0px; }\r\n</style>\r\n<body>");
   
   for (int x=0;x<8;x++){
@@ -447,7 +448,7 @@ blink(1);
     }
     client.print (s+"\r\n");
   }
-client.print ("</body></html>");
+client.print ("<br ><input id=\"text\" type=\"text\" /> <input value=\"Afficher\" type=\"submit\" onclick=\"sendMsg()\"/>\r\n</body></html>");
 }
 
 void loop() 
