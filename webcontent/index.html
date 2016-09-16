@@ -1,35 +1,35 @@
 <html>
 <head>
-<title>aMaker club - CE aMaDEUS</title>
+<title>&#x2728; aMaker club &#x2728; CE aMaDEUS</title>
 <meta charset="utf-8" />
 </head>
 <script>
-	var lastColor = "#000000";
-	function callback() {
-	}
+	var hexDigits = new Array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+			"a", "b", "c", "d", "e", "f");
 
 	function httpGetAsync(theUrl, callback) {
 		var xmlHttp = new XMLHttpRequest();
 		xmlHttp.onreadystatechange = function() {
-			if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-				callback(xmlHttp.responseText);
+			console.log("callback : ")
+			console.log("xmlHttp.readyState=" + xmlHttp.readyState)
+			console.log("xmlHttp.status=" + xmlHttp.status)
+			console.log("xmlHttp.response=" + xmlHttp.response)
 		}
+		console.log("http " + theUrl)
 		xmlHttp.open("GET", theUrl, true);
 		xmlHttp.send();
 	}
 
-
 	function hex(x) {
-		var hexDigits = new Array
-	    ("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"); 
-		  return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
-		 }
+		return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16]
+				+ hexDigits[x % 16];
+	}
 	function rgb2hex(rgb) {
-		 rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-		 return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-		}
+		rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+		return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+	}
 
-	function sendAllColors() {
+	function sendColorMatrix() {
 		s = "";
 		for (var i = 0; i < 8; i++)
 			for (var j = 0; j < 8; j++) {
@@ -40,11 +40,10 @@
 					col = col.substr(col.length - 6)
 				s = s + col + ",";
 			}
-		alert(this.location + "/do?colors=" + s);
 		httpGetAsync(this.location + "/do?colors=" + s)
 	}
 
-		function onClickEventHandler(event) {
+	function onClickEventHandler(event) {
 		if (event != null) {
 			//check for browser compatibility
 			if (event.target) {
@@ -77,34 +76,51 @@
 					.getElementById("colorpicker").value;
 
 	}
-		
+
 	function onload() {
-		for (i = 0; i < 8; i++)for (j = 0; j < 8; j++) {
-			document.getElementById("" + i + "." + j).style.color = "#101010" 
-		}
+		for (i = 0; i < 8; i++)
+			for (j = 0; j < 8; j++) {
+				document.getElementById("" + i + "." + j).style.color = "#101010"
+			}
 		var as = document.querySelectorAll('div');
 		for (i = 0; i < as.length; i++) {
+			as[i].addEventListener('mouseover', function(e) {
+				if (e.shiftKey)
+					onClickEventHandler(e);
+			});
 			as[i].addEventListener('click', function(e) {
 				onClickEventHandler(e);
 			});
-			
+			if (as[i].id.length == 3) {
+				as[i].style.cursor = "pointer";
+			}
 		}
+		document.getElementById("scrollMessage").addEventListener("keyup",
+				function(event) {
+					event.preventDefault();
+					if (event.keyCode == 13) {
+						sendScrollMessage();
+					}
+				});
+	}
+	function sendScrollMessage() {
+		httpGetAsync(this.location + "/msg?"
+				+ document.getElementById("scrollMessage").value)
 	}
 </script>
 
 <style>
 body {
-	background-color: black;
+	background-color: #101010;
 	color: #f0f0f0;
 }
 
-table  {
+table {
 	border: none;
 	margin: 0px;
 	padding: 0px;
 	text-align: center;
 	vertical-align: middle;
-	
 }
 
 colgroup {
@@ -139,15 +155,20 @@ div {
 	margin: 0px;
 }
 </style>
-
 <body onload="javascript:onload()">
 
+	<div style="position: relative;">
+		<input type="color" id="colorpicker"
+			style="position: absolute; width: 9em; height: 2em;"> <label
+			for="colorpicker"
+			style="position: absolute; top: 0.5em; left: 1em; width: 9em; height: 2em;">Color
+			picker </label>
+	</div>
+	<hr />
 	<table>
 		<thead style="color: white;">
 			<tr>
-				<td colspan="9">Pick color <input type="color" id="colorpicker">
-					and click cell(s).
-				</td>
+				<td colspan="9"></td>
 			</tr>
 			<tr class="helper">
 				<td><div id="*.*">&#x2198;</div></td>
@@ -253,10 +274,19 @@ div {
 		</tbody>
 		<tfoot style="color: white;">
 			<tr>
-				<td colspan=8><input type="button" value="SEND"
-					onclick="javascript:sendAllColors();" style="width: 100%;" /></td>
+				<td colspan=8><button onclick="javascript:sendColorMatrix();"
+						style="width: 100%;">Send matrix.</button></td>
 			</tr>
 		</tfoot>
 	</table>
+
+
+	<hr />
+	<input id="scrollMessage" type="text" maxlength="256"
+		placeholder="ANSI message here">
+	<div id="M.F">&#x25cf;Foreground</div>
+	<div id="M.B">&#x25d8;Background</div>
+	<button onclick="sendScrollMessage()">Send text.</button>
+	</td>
 </body>
 </html>
