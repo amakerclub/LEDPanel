@@ -4,7 +4,6 @@
 <meta charset="utf-8" />
 </head>
 
-
 <style>
 body {
 	background-color: #101010;
@@ -17,6 +16,7 @@ table {
 	padding: 0px;
 	text-align: center;
 	vertical-align: middle;
+	background-color: #c0c0c0;
 }
 
 colgroup {
@@ -43,7 +43,7 @@ input[type=color] {
 	border: blue 2px double;
 }
 
-div {
+td {
 	width: 1.4em;
 	height: 1.4em;
 	padding: 0px;
@@ -53,245 +53,278 @@ div {
 </style>
 <body onload="javascript:onload()">
 
-	<script>
-	function httpGetAsync(theUrl, callback) {
-		var xmlHttp = new XMLHttpRequest();
-		xmlHttp.onreadystatechange = function() {
-			console.log("callback : ")
-			console.log("xmlHttp.readyState=" + xmlHttp.readyState)
-			console.log("xmlHttp.status=" + xmlHttp.status)
-			console.log("xmlHttp.response=" + xmlHttp.response)
-		}
-		console.log("http " + theUrl)
-		xmlHttp.open("GET", theUrl, true);
-		xmlHttp.send();
+<script>
+function httpGetAsync(theUrl, callback) {
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() {
+		console.log("callback : ")
+		console.log("xmlHttp.readyState=" + xmlHttp.readyState)
+		console.log("xmlHttp.status=" + xmlHttp.status)
+		console.log("xmlHttp.response=" + xmlHttp.response)
 	}
-	function sendColorMatrix() {
-		s = "";
+	console.log("http " + theUrl)
+	xmlHttp.open("GET", theUrl, true);
+	xmlHttp.send();
+}
+function sndarr() {
+	s = "";
+	for (var i = 0; i < 8; i++)
+		for (var j = 0; j < 8; j++) {
+			col = rgb2hex(document.getElementById("" + i + "." + j).style.color)
+			if (col == null)
+				col = "000000"
+			else
+				col = col.substr(col.length - 6)
+			s = s + col + ",";
+		}
+	httpGetAsync(this.location + "/do?colors=" + s)
+}
+function sendmsg() {
+	httpGetAsync(this.location + "/msg?"
+			+ document.getElementById("msg").value)
+}
+
+var hexDigits = new Array("0", "1", "2", "3", "4", "5", "6", "7", "8",
+		"9", "a", "b", "c", "d", "e", "f");
+
+function hex(x) {
+	return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16]
+			+ hexDigits[x % 16];
+}
+function rgb2hex(rgb) {
+	rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+	return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+}
+function rgb2array(rgb) {
+	return rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+}
+
+function setColor(event, color) {
+	if (event != null) {
+		if (event.target) {
+			fill(event.target.id.substr(0, 1), event.target.id.substr(
+					2, 1), color);
+		} else { //IE
+			fill(event.srcElement.id.substr(0, 1), event.srcElement.id
+					.substr(2, 1), color);
+		}
+	}
+}
+
+function fill(l, c, color) {
+	if (l == "*" && c == "*")
 		for (var i = 0; i < 8; i++)
-			for (var j = 0; j < 8; j++) {
-				col = rgb2hex(document.getElementById("" + i + "." + j).style.color)
-				if (col == null)
-					col = "000000"
-				else
-					col = col.substr(col.length - 6)
-				s = s + col + ",";
-			}
-		httpGetAsync(this.location + "/do?colors=" + s)
-	}
-	function sendScrollMessage() {
-		httpGetAsync(this.location + "/msg?"
-				+ document.getElementById("scrollMessage").value)
-	}
+			for (var j = 0; j < 8; j++)
+				document.getElementById("" + i + "." + j).style.color = color;
+	else if (l == "*")
+		for (var i = 0; i < 8; i++)
+			document.getElementById("" + i + "." + c).style.color = color;
+	else if (c == "*")
+		for (var i = 0; i < 8; i++)
+			document.getElementById("" + l + "." + i).style.color = color;
+	else
+		document.getElementById("" + l + "." + c).style.color = color;
+	matrixToCanvas();
+}
 
-	
-	var hexDigits = new Array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-			"a", "b", "c", "d", "e", "f");
-
-	function hex(x) {
-		return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16]
-				+ hexDigits[x % 16];
-	}
-	function rgb2hex(rgb) {
-		rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-		return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-	}
-
-
-	function setColor(event, color) {
-		if (event != null) {
-			if (event.target) {
-				fill(event.target.id.substr(0, 1), event.target.id.substr(2, 1), color);
-			} else { //IE
-				fill(event.srcElement.id.substr(0, 1), event.srcElement.id
-						.substr(2, 1), color);
-			}
+function onload() {
+	for (i = 0; i < 8; i++)
+		for (j = 0; j < 8; j++) {
+			document.getElementById("" + i + "." + j).style.color = "#101010"
 		}
-	}
-	
-	function fill(l, c, color) {
-		if (l == "*" && c == "*")
-			for (var i = 0; i < 8; i++)
-				for (var j = 0; j < 8; j++)
-					document.getElementById("" + i + "." + j).style.color =color;
-		else if (l == "*")
-			for (var i = 0; i < 8; i++)
-				document.getElementById("" + i + "." + c).style.color = color;
-		else if (c == "*")
-			for (var i = 0; i < 8; i++)
-				document.getElementById("" + l + "." + i).style.color = color;
-		else
-			document.getElementById("" + l + "." + c).style.color = color;
-
-	}
-
-	function onload() {
-		for (i = 0; i < 8; i++)
-			for (j = 0; j < 8; j++) {
-				document.getElementById("" + i + "." + j).style.color = "#101010"
-			}
-		var as = document.querySelectorAll('div');
-		for (i = 0; i < as.length; i++) {
-			as[i].addEventListener('mouseover', function(e) {
-				if (e.shiftKey) {
-					if (e.ctrlKey)
-					setColor(e,getRandomColor());
-					else
-					setColor(e,document
-							.getElementById("colorpicker").value);
+	var as = document.querySelectorAll('td');
+	for (i = 0; i < as.length; i++) {
+		as[i].addEventListener('mouseover',
+				function(e) {
+					if (e.shiftKey) {
+						if (e.ctrlKey)
+							setColor(e, getRandomColor());
+						else
+							setColor(e, document
+									.getElementById("selcol").value);
 					}
-					
-				
-			});
-			as[i].addEventListener('click', function(e) {
-				if (e.ctrlKey)
-					setColor(e,getRandomColor());
-					else
-					setColor(e,document
-							.getElementById("colorpicker").value);
-					
-			});
-			if (as[i].id.length == 3) {
-				as[i].style.cursor = "pointer";
-			}
+
+				});
+		as[i].addEventListener('click', function(e) {
+			if (e.ctrlKey)
+				setColor(e, getRandomColor());
+			else
+				setColor(e, document.getElementById("selcol").value);
+
+		});
+		if (as[i].id.length == 3) {
+			as[i].style.cursor = "pointer";
 		}
-		
 	}
-	function getRandomColor(){
-		return "#"+hex(Math.floor(Math.random() *256))+hex(Math.floor(Math.random() *256))+hex(Math.floor(Math.random() *256))
-		
-	}
+
+}
+function getRandomColor() {
+	return "#" + hex(Math.floor(Math.random() * 256))
+			+ hex(Math.floor(Math.random() * 256))
+			+ hex(Math.floor(Math.random() * 256))
+
+}
+// ----- image canvas part
+function matrixToCanvas() {
+	e = document.getElementById("canvas1");
+	cn = e.getContext("2d");
+	width = e.width;
+	height = e.height;
+	img = cn.createImageData(width, height);
+
+	for (i = 0; i < 8; i++)
+		for (j = 0; j < 8; j++) {
+			cl = rgb2array(document.getElementById("" + i + "." + j).style.color)
+			ix = (j + i * img.width) * 4;
+			img.data[ix + 0] = cl[1];
+			img.data[ix + 1] = cl[2];
+			img.data[ix + 2] = cl[0];
+			img.data[ix + 3] = 256;
+
+			/*}*/
+		}
+	cn.putImageData(img, 0, 0); // at coords 0,0
+
+}
 </script>
-	<div style="position: relative;">
-		<input type="color" id="colorpicker"
-			style="position: absolute; width: 15em; height: 2em;"> <label
-			for="colorpicker"
-			style="position: absolute; top: 0.5em; left: 4.5em; width: 9em; ">Color
-			picker </label>
-	</div>
-	<br/>
-	<table title="CLICK or SHIFT-MouseOver to apply color,CTRL-SHIFT-Mouseover to apply random color. ">
-		<thead style="color: white;">
-			<tr>
-				<td colspan="9"></td>
-			</tr>
-			<tr class="helper">
-				<td><div id="*.*">&#x2198;</div></td>
-				<td><div id="*.0">&#x2193;</div></td>
-				<td><div id="*.1">&#x2193;</div></td>
-				<td><div id="*.2">&#x2193;</div></td>
-				<td><div id="*.3">&#x2193;</div></td>
-				<td><div id="*.4">&#x2193;</div></td>
-				<td><div id="*.5">&#x2193;</div></td>
-				<td><div id="*.6">&#x2193;</div></td>
-				<td><div id="*.7">&#x2193;</div></td>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td><div id="0.*">&#x2192;</div></td>
-				<td><div id="0.0">&#x25C9;</div></td>
-				<td><div id="0.1">&#x25C9;</div></td>
-				<td><div id="0.2">&#x25C9;</div></td>
-				<td><div id="0.3">&#x25C9;</div></td>
-				<td><div id="0.4">&#x25C9;</div></td>
-				<td><div id="0.5">&#x25C9;</div></td>
-				<td><div id="0.6">&#x25C9;</div></td>
-				<td><div id="0.7">&#x25C9;</div></td>
-			</tr>
-			<tr>
-				<td><div id="1.*">&#x2192;</div></td>
-				<td><div id="1.0">&#x25C9;</div></td>
-				<td><div id="1.1">&#x25C9;</div></td>
-				<td><div id="1.2">&#x25C9;</div></td>
-				<td><div id="1.3">&#x25C9;</div></td>
-				<td><div id="1.4">&#x25C9;</div></td>
-				<td><div id="1.5">&#x25C9;</div></td>
-				<td><div id="1.6">&#x25C9;</div></td>
-				<td><div id="1.7">&#x25C9;</div></td>
-			</tr>
-			<tr>
-				<td><div id="2.*">&#x2192;</div></td>
-				<td><div id="2.0">&#x25C9;</div></td>
-				<td><div id="2.1">&#x25C9;</div></td>
-				<td><div id="2.2">&#x25C9;</div></td>
-				<td><div id="2.3">&#x25C9;</div></td>
-				<td><div id="2.4">&#x25C9;</div></td>
-				<td><div id="2.5">&#x25C9;</div></td>
-				<td><div id="2.6">&#x25C9;</div></td>
-				<td><div id="2.7">&#x25C9;</div></td>
-			</tr>
-			<tr>
-				<td><div id="3.*">&#x2192;</div></td>
-				<td><div id="3.0">&#x25C9;</div></td>
-				<td><div id="3.1">&#x25C9;</div></td>
-				<td><div id="3.2">&#x25C9;</div></td>
-				<td><div id="3.3">&#x25C9;</div></td>
-				<td><div id="3.4">&#x25C9;</div></td>
-				<td><div id="3.5">&#x25C9;</div></td>
-				<td><div id="3.6">&#x25C9;</div></td>
-				<td><div id="3.7">&#x25C9;</div></td>
-			</tr>
-			<tr>
-				<td><div id="4.*">&#x2192;</div></td>
-				<td><div id="4.0">&#x25C9;</div></td>
-				<td><div id="4.1">&#x25C9;</div></td>
-				<td><div id="4.2">&#x25C9;</div></td>
-				<td><div id="4.3">&#x25C9;</div></td>
-				<td><div id="4.4">&#x25C9;</div></td>
-				<td><div id="4.5">&#x25C9;</div></td>
-				<td><div id="4.6">&#x25C9;</div></td>
-				<td><div id="4.7">&#x25C9;</div></td>
-			</tr>
-			<tr>
-				<td><div id="5.*">&#x2192;</div></td>
-				<td><div id="5.0">&#x25C9;</div></td>
-				<td><div id="5.1">&#x25C9;</div></td>
-				<td><div id="5.2">&#x25C9;</div></td>
-				<td><div id="5.3">&#x25C9;</div></td>
-				<td><div id="5.4">&#x25C9;</div></td>
-				<td><div id="5.5">&#x25C9;</div></td>
-				<td><div id="5.6">&#x25C9;</div></td>
-				<td><div id="5.7">&#x25C9;</div></td>
-			</tr>
-			<tr>
-				<td><div id="6.*">&#x2192;</div></td>
-				<td><div id="6.0">&#x25C9;</div></td>
-				<td><div id="6.1">&#x25C9;</div></td>
-				<td><div id="6.2">&#x25C9;</div></td>
-				<td><div id="6.3">&#x25C9;</div></td>
-				<td><div id="6.4">&#x25C9;</div></td>
-				<td><div id="6.5">&#x25C9;</div></td>
-				<td><div id="6.6">&#x25C9;</div></td>
-				<td><div id="6.7">&#x25C9;</div></td>
-			</tr>
-			<tr>
-				<td><div id="7.*">&#x2192;</div></td>
-				<td><div id="7.0">&#x25C9;</div></td>
-				<td><div id="7.1">&#x25C9;</div></td>
-				<td><div id="7.2">&#x25C9;</div></td>
-				<td><div id="7.3">&#x25C9;</div></td>
-				<td><div id="7.4">&#x25C9;</div></td>
-				<td><div id="7.5">&#x25C9;</div></td>
-				<td><div id="7.6">&#x25C9;</div></td>
-				<td><div id="7.7">&#x25C9;</div></td>
-			</tr>
-		</tbody>
-		<tfoot style="color: white;">
-			<tr>
-				<td colspan=9><button onclick="javascript:sendColorMatrix();"
-						style="width: 15em;">Send matrix. &#x21F6;</button></td>
-			</tr>
-		</tfoot>
+<label for="selcol" style="width: 6em;">Color picker </label>
+<input type="color" id="selcol" style="width: 2em; height: 1em;">
+<br />
+<table
+	title="CLICK or SHIFT-MouseOver to apply color,CTRL-SHIFT-Mouseover to apply random color. ">
+	<thead>
+		<tr class="helper">
+			<td id="*.*">&#x2198;</td>
+			<td id="*.0">&#x2193;</td>
+			<td id="*.1">&#x2193;</td>
+			<td id="*.2">&#x2193;</td>
+			<td id="*.3">&#x2193;</td>
+			<td id="*.4">&#x2193;</td>
+			<td id="*.5">&#x2193;</td>
+			<td id="*.6">&#x2193;</td>
+			<td id="*.7">&#x2193;</td>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td id="0.*">&#x2192;</td>
+			<td id="0.0">&#x25C9;</td>
+			<td id="0.1">&#x25C9;</td>
+			<td id="0.2">&#x25C9;</td>
+			<td id="0.3">&#x25C9;</td>
+			<td id="0.4">&#x25C9;</td>
+			<td id="0.5">&#x25C9;</td>
+			<td id="0.6">&#x25C9;</td>
+			<td id="0.7">&#x25C9;</td>
+		</tr>
+		<tr>
+			<td id="1.*">&#x2192;</td>
+			<td id="1.0">&#x25C9;</td>
+			<td id="1.1">&#x25C9;</td>
+			<td id="1.2">&#x25C9;</td>
+			<td id="1.3">&#x25C9;</td>
+			<td id="1.4">&#x25C9;</td>
+			<td id="1.5">&#x25C9;</td>
+			<td id="1.6">&#x25C9;</td>
+			<td id="1.7">&#x25C9;</td>
+		</tr>
+		<tr>
+			<td id="2.*">&#x2192;</td>
+			<td id="2.0">&#x25C9;</td>
+			<td id="2.1">&#x25C9;</td>
+			<td id="2.2">&#x25C9;</td>
+			<td id="2.3">&#x25C9;</td>
+			<td id="2.4">&#x25C9;</td>
+			<td id="2.5">&#x25C9;</td>
+			<td id="2.6">&#x25C9;</td>
+			<td id="2.7">&#x25C9;</td>
+		</tr>
+		<tr>
+			<td id="3.*">&#x2192;</td>
+			<td id="3.0">&#x25C9;</td>
+			<td id="3.1">&#x25C9;</td>
+			<td id="3.2">&#x25C9;</td>
+			<td id="3.3">&#x25C9;</td>
+			<td id="3.4">&#x25C9;</td>
+			<td id="3.5">&#x25C9;</td>
+			<td id="3.6">&#x25C9;</td>
+			<td id="3.7">&#x25C9;</td>
+		</tr>
+		<tr>
+			<td id="4.*">&#x2192;</td>
+			<td id="4.0">&#x25C9;</td>
+			<td id="4.1">&#x25C9;</td>
+			<td id="4.2">&#x25C9;</td>
+			<td id="4.3">&#x25C9;</td>
+			<td id="4.4">&#x25C9;</td>
+			<td id="4.5">&#x25C9;</td>
+			<td id="4.6">&#x25C9;</td>
+			<td id="4.7">&#x25C9;</td>
+		</tr>
+		<tr>
+			<td id="5.*">&#x2192;</td>
+			<td id="5.0">&#x25C9;</td>
+			<td id="5.1">&#x25C9;</td>
+			<td id="5.2">&#x25C9;</td>
+			<td id="5.3">&#x25C9;</td>
+			<td id="5.4">&#x25C9;</td>
+			<td id="5.5">&#x25C9;</td>
+			<td id="5.6">&#x25C9;</td>
+			<td id="5.7">&#x25C9;</td>
+		</tr>
+		<tr>
+			<td id="6.*">&#x2192;</td>
+			<td id="6.0">&#x25C9;</td>
+			<td id="6.1">&#x25C9;</td>
+			<td id="6.2">&#x25C9;</td>
+			<td id="6.3">&#x25C9;</td>
+			<td id="6.4">&#x25C9;</td>
+			<td id="6.5">&#x25C9;</td>
+			<td id="6.6">&#x25C9;</td>
+			<td id="6.7">&#x25C9;</td>
+		</tr>
+		<tr>
+			<td id="7.*">&#x2192;</td>
+			<td id="7.0">&#x25C9;</td>
+			<td id="7.1">&#x25C9;</td>
+			<td id="7.2">&#x25C9;</td>
+			<td id="7.3">&#x25C9;</td>
+			<td id="7.4">&#x25C9;</td>
+			<td id="7.5">&#x25C9;</td>
+			<td id="7.6">&#x25C9;</td>
+			<td id="7.7">&#x25C9;</td>
+		</tr>
+	</tbody>
+	<tfoot style="color: white;">
+<tr>
+	<td colspan=9><button onclick="javascript:sndarr();"
+style="width: 15em;">Send matrix. &#x21F6;</button>
+<canvas id="canvas1" width="8px" height="8px"
+	style="border: thick; border-color: white"></canvas></td>
+		</tr>
+	</tfoot>
+</table>
+
+
+<br />
+<table>
+	<tr>
+		<td colspan="2"><input id="msg" type="text" style="width: 15em">
+	</td>
+</tr>
+<tr>
+	<td id="M.F">&#x25cf;Fgd</td>
+	<td>&#x25d8;Bkg</td>
+</tr>
+<tr>
+	<td colspan="2">
+		<button style="width: 15em" onclick="sendmsg()">Send
+					text.&#x2933;</button>
+			</td>
+		</tr>
 	</table>
 
-
 	<br />
-	<input id="scrollMessage" type="text" style="width:15em"
-		placeholder="Your message here - ANSI ONLY">
-	<div id="M.F">&#x25cf;Foreground</div> 
-	<div id="M.B">&#x25d8;Background</div>
-	<button style="width:15em" onclick="sendScrollMessage()">Send text.&#x2933;</button>
-	
+
 </body>
 </html>
