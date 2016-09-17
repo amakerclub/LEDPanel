@@ -3,111 +3,7 @@
 <title>&#x2728; aMaker club &#x2728; CE aMaDEUS</title>
 <meta charset="utf-8" />
 </head>
-<script>
-	var hexDigits = new Array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-			"a", "b", "c", "d", "e", "f");
 
-	function httpGetAsync(theUrl, callback) {
-		var xmlHttp = new XMLHttpRequest();
-		xmlHttp.onreadystatechange = function() {
-			console.log("callback : ")
-			console.log("xmlHttp.readyState=" + xmlHttp.readyState)
-			console.log("xmlHttp.status=" + xmlHttp.status)
-			console.log("xmlHttp.response=" + xmlHttp.response)
-		}
-		console.log("http " + theUrl)
-		xmlHttp.open("GET", theUrl, true);
-		xmlHttp.send();
-	}
-
-	function hex(x) {
-		return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16]
-				+ hexDigits[x % 16];
-	}
-	function rgb2hex(rgb) {
-		rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-		return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-	}
-
-	function sendColorMatrix() {
-		s = "";
-		for (var i = 0; i < 8; i++)
-			for (var j = 0; j < 8; j++) {
-				col = rgb2hex(document.getElementById("" + i + "." + j).style.color)
-				if (col == null)
-					col = "000000"
-				else
-					col = col.substr(col.length - 6)
-				s = s + col + ",";
-			}
-		httpGetAsync(this.location + "/do?colors=" + s)
-	}
-
-	function onClickEventHandler(event) {
-		if (event != null) {
-			//check for browser compatibility
-			if (event.target) {
-				//firefox, safari
-				fill(event.target.id.substr(0, 1), event.target.id.substr(2, 1));
-			} else {
-				//IE
-				fill(event.srcElement.id.substr(0, 1), event.srcElement.id
-						.substr(2, 1));
-			}
-		}
-
-	}
-	function fill(l, c) {
-		if (l == "*" && c == "*")
-			for (var i = 0; i < 8; i++)
-				for (var j = 0; j < 8; j++)
-					document.getElementById("" + i + "." + j).style.color = document
-							.getElementById("colorpicker").value;
-		else if (l == "*")
-			for (var i = 0; i < 8; i++)
-				document.getElementById("" + i + "." + c).style.color = document
-						.getElementById("colorpicker").value;
-		else if (c == "*")
-			for (var i = 0; i < 8; i++)
-				document.getElementById("" + l + "." + i).style.color = document
-						.getElementById("colorpicker").value;
-		else
-			document.getElementById("" + l + "." + c).style.color = document
-					.getElementById("colorpicker").value;
-
-	}
-
-	function onload() {
-		for (i = 0; i < 8; i++)
-			for (j = 0; j < 8; j++) {
-				document.getElementById("" + i + "." + j).style.color = "#101010"
-			}
-		var as = document.querySelectorAll('div');
-		for (i = 0; i < as.length; i++) {
-			as[i].addEventListener('mouseover', function(e) {
-				if (e.shiftKey)
-					onClickEventHandler(e);
-			});
-			as[i].addEventListener('click', function(e) {
-				onClickEventHandler(e);
-			});
-			if (as[i].id.length == 3) {
-				as[i].style.cursor = "pointer";
-			}
-		}
-		document.getElementById("scrollMessage").addEventListener("keyup",
-				function(event) {
-					event.preventDefault();
-					if (event.keyCode == 13) {
-						sendScrollMessage();
-					}
-				});
-	}
-	function sendScrollMessage() {
-		httpGetAsync(this.location + "/msg?"
-				+ document.getElementById("scrollMessage").value)
-	}
-</script>
 
 <style>
 body {
@@ -157,15 +53,124 @@ div {
 </style>
 <body onload="javascript:onload()">
 
+	<script>
+	function httpGetAsync(theUrl, callback) {
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.onreadystatechange = function() {
+			console.log("callback : ")
+			console.log("xmlHttp.readyState=" + xmlHttp.readyState)
+			console.log("xmlHttp.status=" + xmlHttp.status)
+			console.log("xmlHttp.response=" + xmlHttp.response)
+		}
+		console.log("http " + theUrl)
+		xmlHttp.open("GET", theUrl, true);
+		xmlHttp.send();
+	}
+	function sendColorMatrix() {
+		s = "";
+		for (var i = 0; i < 8; i++)
+			for (var j = 0; j < 8; j++) {
+				col = rgb2hex(document.getElementById("" + i + "." + j).style.color)
+				if (col == null)
+					col = "000000"
+				else
+					col = col.substr(col.length - 6)
+				s = s + col + ",";
+			}
+		httpGetAsync(this.location + "/do?colors=" + s)
+	}
+	function sendScrollMessage() {
+		httpGetAsync(this.location + "/msg?"
+				+ document.getElementById("scrollMessage").value)
+	}
+
+	
+	var hexDigits = new Array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+			"a", "b", "c", "d", "e", "f");
+
+	function hex(x) {
+		return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16]
+				+ hexDigits[x % 16];
+	}
+	function rgb2hex(rgb) {
+		rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+		return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+	}
+
+
+	function setColor(event, color) {
+		if (event != null) {
+			if (event.target) {
+				fill(event.target.id.substr(0, 1), event.target.id.substr(2, 1), color);
+			} else { //IE
+				fill(event.srcElement.id.substr(0, 1), event.srcElement.id
+						.substr(2, 1), color);
+			}
+		}
+	}
+	
+	function fill(l, c, color) {
+		if (l == "*" && c == "*")
+			for (var i = 0; i < 8; i++)
+				for (var j = 0; j < 8; j++)
+					document.getElementById("" + i + "." + j).style.color =color;
+		else if (l == "*")
+			for (var i = 0; i < 8; i++)
+				document.getElementById("" + i + "." + c).style.color = color;
+		else if (c == "*")
+			for (var i = 0; i < 8; i++)
+				document.getElementById("" + l + "." + i).style.color = color;
+		else
+			document.getElementById("" + l + "." + c).style.color = color;
+
+	}
+
+	function onload() {
+		for (i = 0; i < 8; i++)
+			for (j = 0; j < 8; j++) {
+				document.getElementById("" + i + "." + j).style.color = "#101010"
+			}
+		var as = document.querySelectorAll('div');
+		for (i = 0; i < as.length; i++) {
+			as[i].addEventListener('mouseover', function(e) {
+				if (e.shiftKey) {
+					if (e.ctrlKey)
+					setColor(e,getRandomColor());
+					else
+					setColor(e,document
+							.getElementById("colorpicker").value);
+					}
+					
+				
+			});
+			as[i].addEventListener('click', function(e) {
+				if (e.ctrlKey)
+					setColor(e,getRandomColor());
+					else
+					setColor(e,document
+							.getElementById("colorpicker").value);
+					
+			});
+			if (as[i].id.length == 3) {
+				as[i].style.cursor = "pointer";
+			}
+		}
+		
+	}
+	function getRandomColor(){
+		return "#"+hex(Math.floor(Math.random() *256))+hex(Math.floor(Math.random() *256))+hex(Math.floor(Math.random() *256))
+		
+	}
+</script>
 	<div style="position: relative;">
 		<input type="color" id="colorpicker"
-			style="position: absolute; width: 9em; height: 2em;"> <label
+			style="position: absolute; width: 15em; height: 2em;"> <label
 			for="colorpicker"
-			style="position: absolute; top: 0.5em; left: 1em; width: 9em; height: 2em;">Color
+			style="position: absolute; top: 0.5em; left: 4.5em; width: 9em; ">Color
 			picker </label>
 	</div>
-	<hr />
-	<table>
+	<br/>
+	<table title="CLICK or SHIFT-MouseOver to apply color,CTRL-SHIFT-Mouseover to apply random color. ">
 		<thead style="color: white;">
 			<tr>
 				<td colspan="9"></td>
@@ -274,19 +279,19 @@ div {
 		</tbody>
 		<tfoot style="color: white;">
 			<tr>
-				<td colspan=8><button onclick="javascript:sendColorMatrix();"
-						style="width: 100%;">Send matrix.</button></td>
+				<td colspan=9><button onclick="javascript:sendColorMatrix();"
+						style="width: 15em;">Send matrix. &#x21F6;</button></td>
 			</tr>
 		</tfoot>
 	</table>
 
 
-	<hr />
-	<input id="scrollMessage" type="text" maxlength="256"
-		placeholder="ANSI message here">
-	<div id="M.F">&#x25cf;Foreground</div>
+	<br />
+	<input id="scrollMessage" type="text" style="width:15em"
+		placeholder="Your message here - ANSI ONLY">
+	<div id="M.F">&#x25cf;Foreground</div> 
 	<div id="M.B">&#x25d8;Background</div>
-	<button onclick="sendScrollMessage()">Send text.</button>
-	</td>
+	<button style="width:15em" onclick="sendScrollMessage()">Send text.&#x2933;</button>
+	
 </body>
 </html>
