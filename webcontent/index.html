@@ -124,7 +124,7 @@ function fill(l, c, color) {
 			document.getElementById("" + l + "." + i).style.color = color;
 	else
 		document.getElementById("" + l + "." + c).style.color = color;
-	matrixToCanvas();
+	arrtocnv();
 }
 
 function onload() {
@@ -138,7 +138,7 @@ function onload() {
 				function(e) {
 					if (e.shiftKey) {
 						if (e.ctrlKey)
-							setColor(e, getRandomColor());
+							setColor(e, rndcol());
 						else
 							setColor(e, document
 									.getElementById("selcol").value);
@@ -147,7 +147,7 @@ function onload() {
 				});
 		as[i].addEventListener('click', function(e) {
 			if (e.ctrlKey)
-				setColor(e, getRandomColor());
+				setColor(e, rndcol());
 			else
 				setColor(e, document.getElementById("selcol").value);
 
@@ -158,14 +158,14 @@ function onload() {
 	}
 
 }
-function getRandomColor() {
+function rndcol() {
 	return "#" + hex(Math.floor(Math.random() * 256))
 			+ hex(Math.floor(Math.random() * 256))
 			+ hex(Math.floor(Math.random() * 256))
 
 }
 // ----- image canvas part
-function matrixToCanvas() {
+function arrtocnv() {
 	e = document.getElementById("canvas1");
 	cn = e.getContext("2d");
 	width = e.width;
@@ -187,6 +187,7 @@ function matrixToCanvas() {
 
 }
 </script>
+
 <label for="selcol" style="width: 6em;">Color picker </label>
 <input type="color" id="selcol" style="width: 2em; height: 1em;">
 <br />
