@@ -118,6 +118,67 @@ WiFiServer server(80);
 
 bool debug = false;
 
+String getTD(String id, String value){
+return ("<td id=\"+id+\">"+value+"</td>");
+}
+
+void printCSS(WiFiClient client){
+client.println("<style>");
+client.println("body {background-color: #101010  ;color: #f0f0f0  ;}");
+client.println("table {border: none;margin: 0px;padding: 0px;text-align: center;vertical-align: middle;background-color: #c0c0c0  ;}");
+client.println("tfoot, thead {border-top: 2px outset white;border-bottom: 2px outset white;}");
+client.println("input[type=color] {background-color: black;border: none;height: 20px;width: 20px;padding: 0px;margin: 0px;cursor: crosshair;}");
+client.println("td {width: 1.4em;height: 1.4em;padding: 0px;margin: 0px;margin: 0px;}");
+client.println("</style>");
+}
+
+void printJavascript(WiFiClient client){
+client.println("<script>");
+client.println("function httpGetAsync(theUrl, callback) {var xmlHttp = new XMLHttpRequest();xmlHttp.onreadystatechange =function() {xmlHttp.open('GET', theUrl, true);xmlHttp.send();}");
+client.println("function sndarr() {s = '';for (var i = 0; i < 8; i++)for (var j = 0; j < 8; j++) {col = rgb2hex(document.getElementById('' + i + '.' + j).style.color)if (col == null)col = '000000'elsecol = col.substr(col.length - 6)s = s + col + ',';}httpGetAsync(this.location + '/do?colors=' + s)}");
+client.println("function sendmsg() {httpGetAsync(this.location + '/msg?'+ document.getElementById('msg').value)}var hexDigits = new Array('0', '1', '2', '3', '4', '5', '6', '7', '8','9', 'a', 'b', 'c', 'd', 'e', 'f');");
+client.println("function hex(x) {return isNaN(x) ? '00' : hexDigits[(x - x % 16) / 16]+ hexDigits[x % 16];}");
+client.println("function rgb2hex(rgb) {rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);return '#' + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);}");
+client.println("function rgb2array(rgb) {return rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);}");
+client.println("function arr2hex(rgb) {return '#' + hex(rgb[0]) + hex(rgb[1]) + hex(rgb[2]);}");
+client.println("function setColor(event, color) {if (event != null) {if (event.target) {fill(event.target.id.substr(0, 1), event.target.id.substr(2, 1), color);} else { fill(event.srcElement.id.substr(0, 1), event.srcElement.id.substr(2, 1), color);}}}");
+client.println("function fill(l, c, color) {if (l == '*' && c == '*')for (var i = 0; i < 8; i++)for (var j = 0; j < 8; j++)document.getElementById('' + i + '.' + j).style.color = color;else if (l == '-' && c == '-')for (var i = 0; i < 8; i++)for (var j = 0; j < 8; j++)document.getElementById('' + i + '.' + j).style.color = color;else if (l == '*') for (var i = 0; i < 8; i++)document.getElementById('' + i + '.' + c).style.color = color;else if (c == '*') for (var i = 0; i < 8; i++)document.getElementById('' + l + '.' + i).style.color = color;else if (c == '-') { fromC = rgb2array(document.getElementById('' + l + '.' + 0).style.color);toC = rgb2array(document.getElementById('' + l + '.' + 7).style.color);for (var i = 0; i < 8; i++) {r = parseInt(fromC[1])+ Math.floor((parseInt(toC[1]) - parseInt(fromC[1]))* i / 7);g = parseInt(fromC[2])+ Math.floor((parseInt(toC[2]) - parseInt(fromC[2]))* i / 7);b = parseInt(fromC[3])+ Math.floor((parseInt(toC[3]) - parseInt(fromC[3]))* i / 7);document.getElementById('' + l + '.' + i).style.color = arr2hex([r, g, b ]);}} else if (l == '-')for (var i = 0; i < 8; i++) {fromC = rgb2array(document.getElementById('' + 0 + '.' + c).style.color);toC = rgb2array(document.getElementById('' + 7 + '.' + c).style.color);for (var i = 0; i < 8; i++) {document.getElementById('' + i + '.' + c).style.color = arr2hex([parseInt(fromC[1])+ Math.floor((parseInt(toC[1]) - parseInt(fromC[1]))* i / 7),parseInt(fromC[2])+ Math.floor((parseInt(toC[2]) - parseInt(fromC[2]))* i / 7),parseInt(fromC[3])+ Math.floor((parseInt(toC[3]) - parseInt(fromC[3]))* i / 7) ]);}}elsedocument.getElementById('' + l + '.' + c).style.color = color;arrtocnv();}");
+client.println("function onload() {for (i = 0; i < 8; i++)for (j = 0; j < 8; j++) {document.getElementById('' + i + '.' + j).style.color = '#101010'}var as = document.querySelectorAll('td');for (i = 0; i < as.length; i++) {as[i].addEventListener('mouseover',");
+client.println("function(e) {if (e.shiftKey) {if (e.ctrlKey)setColor(e, rndcol());elsesetColor(e, document.getElementById('selcol').value);}});as[i].addEventListener('click', ");
+client.println("function(e) {if (e.ctrlKey)setColor(e, rndcol());elsesetColor(e, document.getElementById('selcol').value);});if (as[i].id.length == 3) {as[i].style.cursor = 'pointer';}}}");
+client.println("function rndcol() {return '#' + hex(Math.floor(Math.random() * 256))+ hex(Math.floor(Math.random() * 256))+ hex(Math.floor(Math.random() * 256))}");
+client.println("function arrtocnv() {e = document.getElementById('canvas1');cn = e.getContext('2d');width = e.width;height = e.height;img = cn.createImageData(width, height);for (i = 0; i < 8; i++)for (j = 0; j < 8; j++) {cl = rgb2array(document.getElementById('' + i + '.' + j).style.color)ix = (j + i * img.width) * 4;img.data[ix + 0] = cl[1];img.data[ix + 1] = cl[2];img.data[ix + 2] = cl[0];img.data[ix + 3] = 256;}cn.putImageData(img, 0, 0); }");
+client.println("</script>");
+}
+
+void printPanelTable(WiFiClient client) {
+  client.println("<html>");
+  printCSS(client);
+  printJavascript(client);
+  client.println("<body><table><thead><tr>"+getTD("*.*","&#x21D8"));
+  for (int i=0; i<8; i++) 
+    client.println(getTD("*."+i, "&#x21D3"));
+  client.println(getTD("?.7","&#x25A7"));
+  client.println("</tr></thead>");
+  client.println("<tbody>");
+  for (int i=0; i<8; i++) {
+    client.println("<tr>"+getTD(i+".*","&#x21D2"));
+    for (int j=0; j<8; j++) {
+      client.println(getTD(i+"."+j,"&#x25C9"));
+    }
+    client.println(getTD("i.-","&#x25A5"));
+    client.println("</tr>");
+  }
+  client.println("</tr></tbody>");
+  client.println("<tfoot><tr>"+getTD("-.-","&#x25A9"));
+  for (int i=0; i<8; i++) {
+    client.println(getTD("-."+i, "&#x25A4"));
+  }
+  client.println(getTD("-?","&#x25A8"));
+  client.println("</tr></tfoot></table></body>");
+  client.println("</html>");
+}
+
 void blink(byte n){
   for (byte i=0; i<n; i++) {
   digitalWrite(LEDPIN, LOW);    // turn the LED off by making the voltage LOW
@@ -195,7 +256,7 @@ String getCharHexa(char value) {
 void handleHexaStringRequest(String req, int waitms) {
   printDebug("req="+req);
 
-  RgbColor white = RgbColor(128,128,128);
+  RgbColor white = RgbColor(255,255,255);
   RgbColor black = RgbColor(0,0,0);
   int off = 0;
   int pixelNumber= 0;
@@ -427,9 +488,9 @@ void handleMessageScrollRequest(String req ){
 
 void handleDefault(WiFiClient client){
 blink(1);
-
+printPanelTable(client);
  
-  
+  /*
   client.println("<html><head><title>aMaker club - CE aMaDEUS</title></head>\r\n<script>\r\nfunction sendColor(t){ httpGetAsync( this.location + \"/set?\"+t.id+\"=\"+t.value);}\r\nfunction callback(){ } ");
     client.println("function httpGetAsync(theUrl, callback) {    var xmlHttp = new XMLHttpRequest();\r\n   xmlHttp.onreadystatechange = function() { if (xmlHttp.readyState == 4 && xmlHttp.status == 200) \r\ncallback(xmlHttp.responseText); }  \r\nxmlHttp.open(\"GET\", theUrl, true);\r\nxmlHttp.send(); }");
    client.println("function sendMsg() { httpGetAsync( this.location + \"/msg?  \" + document.getElementById(\"text\").value);}");
@@ -449,7 +510,7 @@ blink(1);
     client.print (s+"\r\n");
   }
 client.print ("<br ><input id=\"text\" type=\"text\" /> <input value=\"Afficher\" type=\"submit\" onclick=\"sendMsg()\"/>\r\n</body></html>");
-}
+*/}
 
 void loop() 
 {
@@ -467,7 +528,8 @@ void loop()
   String s = "HTTP/1.1 200 OK\r\n";
   s += "Content-Type: text/html\r\n\r\n";
   s += "<!DOCTYPE HTML>\r\n";
-  s += "<html><body><i>ok</i></body></html>";
+
+  client.print(s);
 
   // Send the response to the client - always ok :-/
   
@@ -482,7 +544,6 @@ void loop()
   }
   else { handleDefault(client);}
   
-  client.print(s);
   
   client.flush();
 
