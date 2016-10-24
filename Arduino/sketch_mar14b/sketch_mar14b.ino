@@ -119,35 +119,21 @@ WiFiServer server(80);
 bool debug = false;
 
 String getTD(String id, String value){
-return ("<td id=\"+id+\">"+value+"</td>");
+return ((String)("<td id=\"") + id + (String)("\">") + value + (String)("</td>"));
 }
 
 void printCSS(WiFiClient client){
 client.println("<style>");
-client.println("body {background-color: #101010  ;color: #f0f0f0  ;}");
-client.println("table {border: none;margin: 0px;padding: 0px;text-align: center;vertical-align: middle;background-color: #c0c0c0  ;}");
-client.println("tfoot, thead {border-top: 2px outset white;border-bottom: 2px outset white;}");
-client.println("input[type=color] {background-color: black;border: none;height: 20px;width: 20px;padding: 0px;margin: 0px;cursor: crosshair;}");
-client.println("td {width: 1.4em;height: 1.4em;padding: 0px;margin: 0px;margin: 0px;}");
+client.println("input[type=color],table,td{padding:0;margin:0}body{background-color:#101010;color:#f0f0f0}table{border:none;text-align:center;vertical-align:middle;background-color:silver}colgroup{border-right:2px outset #fff;border-left:2px outset #fff}tfoot,thead{border-top:2px outset #fff;border-bottom:2px outset #fff}input[type=color]{background-color:#000;border:none;height:20px;width:20px;cursor:crosshair}.drop_hover{border:2px double #00f}td{width:1.4em;height:1.4em}"
+);
 client.println("</style>");
 }
 
 void printJavascript(WiFiClient client){
 client.println("<script>");
-client.println("function httpGetAsync(theUrl, callback) {var xmlHttp = new XMLHttpRequest();xmlHttp.onreadystatechange =function() {xmlHttp.open('GET', theUrl, true);xmlHttp.send();}");
-client.println("function sndarr() {s = '';for (var i = 0; i < 8; i++)for (var j = 0; j < 8; j++) {col = rgb2hex(document.getElementById('' + i + '.' + j).style.color)if (col == null)col = '000000'elsecol = col.substr(col.length - 6)s = s + col + ',';}httpGetAsync(this.location + '/do?colors=' + s)}");
-client.println("function sendmsg() {httpGetAsync(this.location + '/msg?'+ document.getElementById('msg').value)}var hexDigits = new Array('0', '1', '2', '3', '4', '5', '6', '7', '8','9', 'a', 'b', 'c', 'd', 'e', 'f');");
-client.println("function hex(x) {return isNaN(x) ? '00' : hexDigits[(x - x % 16) / 16]+ hexDigits[x % 16];}");
-client.println("function rgb2hex(rgb) {rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);return '#' + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);}");
-client.println("function rgb2array(rgb) {return rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);}");
-client.println("function arr2hex(rgb) {return '#' + hex(rgb[0]) + hex(rgb[1]) + hex(rgb[2]);}");
-client.println("function setColor(event, color) {if (event != null) {if (event.target) {fill(event.target.id.substr(0, 1), event.target.id.substr(2, 1), color);} else { fill(event.srcElement.id.substr(0, 1), event.srcElement.id.substr(2, 1), color);}}}");
-client.println("function fill(l, c, color) {if (l == '*' && c == '*')for (var i = 0; i < 8; i++)for (var j = 0; j < 8; j++)document.getElementById('' + i + '.' + j).style.color = color;else if (l == '-' && c == '-')for (var i = 0; i < 8; i++)for (var j = 0; j < 8; j++)document.getElementById('' + i + '.' + j).style.color = color;else if (l == '*') for (var i = 0; i < 8; i++)document.getElementById('' + i + '.' + c).style.color = color;else if (c == '*') for (var i = 0; i < 8; i++)document.getElementById('' + l + '.' + i).style.color = color;else if (c == '-') { fromC = rgb2array(document.getElementById('' + l + '.' + 0).style.color);toC = rgb2array(document.getElementById('' + l + '.' + 7).style.color);for (var i = 0; i < 8; i++) {r = parseInt(fromC[1])+ Math.floor((parseInt(toC[1]) - parseInt(fromC[1]))* i / 7);g = parseInt(fromC[2])+ Math.floor((parseInt(toC[2]) - parseInt(fromC[2]))* i / 7);b = parseInt(fromC[3])+ Math.floor((parseInt(toC[3]) - parseInt(fromC[3]))* i / 7);document.getElementById('' + l + '.' + i).style.color = arr2hex([r, g, b ]);}} else if (l == '-')for (var i = 0; i < 8; i++) {fromC = rgb2array(document.getElementById('' + 0 + '.' + c).style.color);toC = rgb2array(document.getElementById('' + 7 + '.' + c).style.color);for (var i = 0; i < 8; i++) {document.getElementById('' + i + '.' + c).style.color = arr2hex([parseInt(fromC[1])+ Math.floor((parseInt(toC[1]) - parseInt(fromC[1]))* i / 7),parseInt(fromC[2])+ Math.floor((parseInt(toC[2]) - parseInt(fromC[2]))* i / 7),parseInt(fromC[3])+ Math.floor((parseInt(toC[3]) - parseInt(fromC[3]))* i / 7) ]);}}elsedocument.getElementById('' + l + '.' + c).style.color = color;arrtocnv();}");
-client.println("function onload() {for (i = 0; i < 8; i++)for (j = 0; j < 8; j++) {document.getElementById('' + i + '.' + j).style.color = '#101010'}var as = document.querySelectorAll('td');for (i = 0; i < as.length; i++) {as[i].addEventListener('mouseover',");
-client.println("function(e) {if (e.shiftKey) {if (e.ctrlKey)setColor(e, rndcol());elsesetColor(e, document.getElementById('selcol').value);}});as[i].addEventListener('click', ");
-client.println("function(e) {if (e.ctrlKey)setColor(e, rndcol());elsesetColor(e, document.getElementById('selcol').value);});if (as[i].id.length == 3) {as[i].style.cursor = 'pointer';}}}");
-client.println("function rndcol() {return '#' + hex(Math.floor(Math.random() * 256))+ hex(Math.floor(Math.random() * 256))+ hex(Math.floor(Math.random() * 256))}");
-client.println("function arrtocnv() {e = document.getElementById('canvas1');cn = e.getContext('2d');width = e.width;height = e.height;img = cn.createImageData(width, height);for (i = 0; i < 8; i++)for (j = 0; j < 8; j++) {cl = rgb2array(document.getElementById('' + i + '.' + j).style.color)ix = (j + i * img.width) * 4;img.data[ix + 0] = cl[1];img.data[ix + 1] = cl[2];img.data[ix + 2] = cl[0];img.data[ix + 3] = 256;}cn.putImageData(img, 0, 0); }");
+client.println("function httpGetAsync(a,b){var c=new XMLHttpRequest;c.onreadystatechange=function(){console.log(\"callback : \"),console.log(\"xmlHttp.readyState=\"+c.readyState),console.log(\"xmlHttp.status=\"+c.status),console.log(\"xmlHttp.response=\"+c.response)},console.log(\"http \"+a),c.open(\"GET\",a,!0),c.send()}function sndarr(){s=\"\";for(var a=0;a<8;a++)for(var b=0;b<8;b++)col=rgb2hex(document.getElementById(\"\"+a+\".\"+b).style.color),null==col?col=\"000000\":col=col.substr(col.length-6),s=s+col+\",\";httpGetAsync(this.location+\"/do?colors=\"+s)}function sendmsg(){httpGetAsync(this.location+\"/msg?\"+document.getElementById(\"msg\").value)}function hex(a){return isNaN(a)?\"00\":hexDigits[(a-a%16)/16]+hexDigits[a%16]}function rgb2hex(a){return a=a.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/),\"#\"+hex(a[1])+hex(a[2])+hex(a[3])}function rgb2array(a){return a.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)}function arr2hex(a){return\"#\"+hex(a[0])+hex(a[1])+hex(a[2])}function setColor(a,b){null!=a&&(a.target?fill(a.target.id.substr(0,1),a.target.id.substr(2,1),b):fill(a.srcElement.id.substr(0,1),a.srcElement.id.substr(2,1),b))}function fill(a,c,d){if(\"*\"==a&&\"*\"==c)for(var e=0;e<8;e++)for(var f=0;f<8;f++)document.getElementById(\"\"+e+\".\"+f).style.color=d;else if(\"-\"==a&&\"-\"==c)for(var e=0;e<8;e++)for(var f=0;f<8;f++)document.getElementById(\"\"+e+\".\"+f).style.color=d;else if(\"*\"==a)for(var e=0;e<8;e++)document.getElementById(\"\"+e+\".\"+c).style.color=d;else if(\"*\"==c)for(var e=0;e<8;e++)document.getElementById(\"\"+a+\".\"+e).style.color=d;else if(\"-\"==c){fromC=rgb2array(document.getElementById(\"\"+a+\".0\").style.color),toC=rgb2array(document.getElementById(\"\"+a+\".7\").style.color);for(var e=0;e<8;e++)r=parseInt(fromC[1])+Math.floor((parseInt(toC[1])-parseInt(fromC[1]))*e/7),g=parseInt(fromC[2])+Math.floor((parseInt(toC[2])-parseInt(fromC[2]))*e/7),b=parseInt(fromC[3])+Math.floor((parseInt(toC[3])-parseInt(fromC[3]))*e/7),document.getElementById(\"\"+a+\".\"+e).style.color=arr2hex([r,g,b])}else if(\"-\"==a)for(var e=0;e<8;e++){fromC=rgb2array(document.getElementById(\"0.\"+c).style.color),toC=rgb2array(document.getElementById(\"7.\"+c).style.color);for(var e=0;e<8;e++)document.getElementById(\"\"+e+\".\"+c).style.color=arr2hex([parseInt(fromC[1])+Math.floor((parseInt(toC[1])-parseInt(fromC[1]))*e/7),parseInt(fromC[2])+Math.floor((parseInt(toC[2])-parseInt(fromC[2]))*e/7),parseInt(fromC[3])+Math.floor((parseInt(toC[3])-parseInt(fromC[3]))*e/7)])}else document.getElementById(\"\"+a+\".\"+c).style.color=d;arrtocnv()}function onload(){for(i=0;i<8;i++)for(j=0;j<8;j++)");
+client.println("document.getElementById(\"\"+i+\".\"+j).style.color=\"#101010\";var a=document.querySelectorAll(\"td\");for(i=0;i<a.length;i++)a[i].addEventListener(\"mouseover\",function(a){a.shiftKey&&(a.ctrlKey?setColor(a,rndcol()):setColor(a,document.getElementById(\"selcol\").value))}),");
+client.println("a[i].addEventListener(\"click\",function(a){a.ctrlKey?setColor(a,rndcol()):setColor(a,document.getElementById(\"selcol\").value)}),3==a[i].id.length&&(a[i].style.cursor=\"pointer\")}function rndcol(){return\"#\"+hex(Math.floor(256*Math.random()))+hex(Math.floor(256*Math.random()))+hex(Math.floor(256*Math.random()))}function arrtocnv(){for(e=document.getElementById(\"canvas1\"),cn=e.getContext(\"2d\"),width=e.width,height=e.height,img=cn.createImageData(width,height),i=0;i<8;i++)for(j=0;j<8;j++)cl=rgb2array(document.getElementById(\"\"+i+\".\"+j).style.color),ix=4*(j+i*img.width),img.data[ix+0]=cl[1],img.data[ix+1]=cl[2],img.data[ix+2]=cl[0],img.data[ix+3]=256;cn.putImageData(img,0,0)}var hexDigits=new Array(\"0\",\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"a\",\"b\",\"c\",\"d\",\"e\",\"f\");");
 client.println("</script>");
 }
 
@@ -155,27 +141,31 @@ void printPanelTable(WiFiClient client) {
   client.println("<html>");
   printCSS(client);
   printJavascript(client);
-  client.println("<body><table><thead><tr>"+getTD("*.*","&#x21D8"));
+  client.println("<body onload=\"javascript:onload()\">");
+  client.println("<label for=\"selcol\" style=\"width: 6em;\">Color picker </label><input type=\"color\" id=\"selcol\" style=\"width: 2em; height: 1em;\"><br />");
+  client.println("<table><thead><tr>"+getTD("*.*","&#x21D8"));
   for (int i=0; i<8; i++) 
-    client.println(getTD("*."+i, "&#x21D3"));
+    client.println(getTD("*."+String(i), "&#x21D3"));
   client.println(getTD("?.7","&#x25A7"));
   client.println("</tr></thead>");
   client.println("<tbody>");
   for (int i=0; i<8; i++) {
-    client.println("<tr>"+getTD(i+".*","&#x21D2"));
+    client.println("<tr>"+getTD(String(i)+".*","&#x21D2"));
     for (int j=0; j<8; j++) {
-      client.println(getTD(i+"."+j,"&#x25C9"));
+      client.println(getTD(String(i)+"."+String(j),"&#x25C9"));
     }
-    client.println(getTD("i.-","&#x25A5"));
+    client.println(getTD(String(i)+".-","&#x25A5"));
     client.println("</tr>");
   }
-  client.println("</tr></tbody>");
-  client.println("<tfoot><tr>"+getTD("-.-","&#x25A9"));
+  client.println("</tbody>");
+  client.println("<tr>"+getTD("-.-","&#x25A9"));
   for (int i=0; i<8; i++) {
-    client.println(getTD("-."+i, "&#x25A4"));
+    client.println(getTD("-."+String(i), "&#x25A4"));
   }
   client.println(getTD("-?","&#x25A8"));
-  client.println("</tr></tfoot></table></body>");
+  client.println("</tr><tfoot><tr><td colspan=9><button onclick=\"javascript:sndarr();\" style=\"width: 15em;\">Send matrix. &#x21F6;</button><canvas id=\"canvas1\" width=\"8px\" height=\"8px\" style=\"border: thick; border-color: white\"></canvas></td></tr></tfoot></table>");
+  client.println("<br/><table><tr><td colspan=\"2\"><input id=\"msg\" type=\"text\" style=\"width: 15em\"></td></tr><tr><td id=\"M.F\">&#x25cf;Fgd</td><td id=\"M.B\">&#x25d8;Bkg</td></tr><tr><td colspan=\"2\"><button style=\"width: 15em\" onclick=\"sendmsg()\">Send text.&#x2933;</button></td></tr></table>");
+  client.println("</body>");
   client.println("</html>");
 }
 
@@ -519,7 +509,7 @@ void loop()
   if (!client) {
     return;
   }
-  client.setTimeout(120000);
+  client.setTimeout(10000);
   // Read the first line of the request
   String req = client.readStringUntil('\r');
   client.flush();
