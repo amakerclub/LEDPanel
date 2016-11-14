@@ -424,8 +424,15 @@ void handleDoRequest(String req ){
         int pixelR =getColorValueFromHexa(pixelRGB .substring(0,2));
         int pixelG =getColorValueFromHexa(pixelRGB.substring(2,4));
         int pixelB =getColorValueFromHexa(pixelRGB.substring(4,6));
-
-        strip.SetPixelColor(pixelNumber++, RgbColor(pixelR,pixelG,pixelB));
+        if ((int)(pixelNumber / 8) % 2 == 0) {
+            strip.SetPixelColor(pixelNumber++, RgbColor(pixelR,pixelG,pixelB));
+	}
+	else {
+	    int col = (int)(pixelNumber / 8);
+	    int ligne = pixelNumber % 8;
+	    strip.SetPixelColor(8 * col + (7 - ligne), RgbColor(pixelR,pixelG,pixelB));
+	    pixelNumber ++;
+	}
         currentComma = nextComma + 1;
         nextComma = colors.indexOf(',',currentComma);
         
